@@ -96,6 +96,26 @@ export async function login(req, res){
 
 /** GET http://localhost:8000/api/example123 */
 export async function getUser(req, res){
+    const { username } = req.params;
+    try{
+       if(!username) return res.status(501).send({ error: "Invalid Username" });
+
+       const user = await UserModel.findOne({ username });
+       if(user){
+           // mongoose returns unnecessary data with object so convert it to json
+          const { password, ...rest } =  Object.assign({}, user.toJSON());
+          return res.status(200).send(rest);
+       }
+       if(!user){
+         return res.status(501).send({ error: "Cannot Find User"});  
+       }else{
+          return res.status(500).send({ error })
+       }
+    }catch(error){
+      res.status(404).send({ error: "Cannot Find User Data" })
+    }
+    
+    
     res.json('getUser route');
 }
 
@@ -103,6 +123,33 @@ export async function getUser(req, res){
 
 /** PUT http://localhost:8000/api/updateUser */
 export async function updateUser(req, res){
+    
+    try{
+     const id = req.query.id;
+
+     if(id){
+        const body = req.body;
+
+        const updatedUser = await UserModel.updateOne({ _id: id }, body);
+        if(updatedUser){
+           return res.status(201).send({ msg: "Record Updated...!"});
+        }else if(err) {
+           throw err; 
+        }
+
+     }else{
+        return res.status(401).send({ error: "User not found...!" });
+     }
+
+
+    }catch(error){
+    return  res.status(401).json({ error: "Cannot Update User"});  
+    }
+    
+    
+    
+    
+    
     res.json('updateUser route');
 }
 
