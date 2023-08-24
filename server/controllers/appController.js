@@ -1,7 +1,23 @@
 import UserModel from '../model/User.model.js';
 import bcrypt from 'bcrypt';
-import { Jwt } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import ENV from "../config.js";
+
+/**  middleware for verify user */
+export async function verifyUser(req, res, next){
+   try{
+
+       const { username } = req.method == "GET" ? req.query : req.body;
+       
+       // check use3r existence
+       const user = await UserModel.findOne({ username });
+       if(!user) return res.status(404).send({ error: "Can't Find User!"});
+       next();
+    } catch (error){
+        return res.status(404).send({ error: "Authentication Error"}); 
+    }
+ }
+
 
 /** POST http://localhost:8000/api/register */
 export async function register(req, res) {
@@ -60,7 +76,7 @@ export async function login(req, res){
    // Compare passwords
    const isPasswordMatch = await bcrypt.compare(password, User.password);
    // create jwt token
-   const token = Jwt.sign({
+   const token = jwt.sign({
      userId: User._id,
      username: User.username
    }, 'secret', { expiresIn : "24h"});
