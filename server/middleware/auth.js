@@ -32,3 +32,11 @@ export default async function Auth(req, res, next) {
         return res.status(401).json({ error: err.message });
     }
 }
+
+export function locationVariables(req, res, next){
+    req.app.locals = {
+        OTP: null,
+        resetSession: false
+    }
+    next()
+}
