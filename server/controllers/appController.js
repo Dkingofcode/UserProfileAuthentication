@@ -129,6 +129,19 @@ export async function getUser(req, res){
 
 
 /** PUT http://localhost:8000/api/updateUser */
+/* @param: {
+    "id" : "<userid>"
+}    
+body: {
+    firstName: '',
+    address: '',
+    profile: ''
+}
+  
+
+*/
+
+
 export async function updateUser(req, res){
     
     try{

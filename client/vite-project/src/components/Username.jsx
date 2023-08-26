@@ -5,9 +5,15 @@ import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { usernameValidate } from '../helper/validate';
+import { useAuthStore } from '../store/store'; 
+
+
+
 
 const Username = () => {
-  const formik = useFormik({
+  useAuthStore(state => console.log(state))
+  
+    const formik = useFormik({
     initialValues : {
         username: ''
     },
