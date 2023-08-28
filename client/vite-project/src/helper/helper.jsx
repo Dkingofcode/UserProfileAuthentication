@@ -1,8 +1,16 @@
 // Make api request
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
+axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_DOMAIN;
 
-axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_DOMAIN
+/**  To get username */
+export async function getUsername(){
+  const token = localStorage.getItem('token')
+  if(!token) return Promise.reject("Cannot find token");
+  let decode = jwt_decode(token)
+  return decode;
+}
 
 /* authenticate   */
 export async function authenticate(username){
@@ -93,7 +101,7 @@ export async function verifyOTP({ username, code } ){
 
 export async function resetPassword({ username, password}){
     try{
-      await axios.put('/api/resetPassword/', {params: { username, password }});
+      await axios.put('/api/resetPassword/',  { username, password });
       return Promise.resolve({ data, status})
     } catch(error){
         Promise.reject({ error})

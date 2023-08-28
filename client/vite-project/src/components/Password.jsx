@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import avatar from '../assets/profile.png';
 import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
@@ -8,11 +8,13 @@ import { useFormik } from 'formik';
 import { passwordValidate } from '../helper/validate';
 import useFetch from '../hooks/fetchhooks';
 import { useAuthStore } from '../store/store';
+import { verifyPassword } from '../helper/helper';
+
 
 const Password = () => {
    const { username } = useAuthStore(state => state.auth)
    const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`) 
-   useFetch('/user/');
+   const navigate = useNavigate();
   
     const formik = useFormik({
     initialValues : {
@@ -22,7 +24,18 @@ const Password = () => {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async values => {
-      console.log(values);  
+
+      let loginPromise = verifyPassword({ username })  
+      toast.promise(loginPromise, {
+        loading: 'Checking...',
+        success: <b>Login Successfully...!</b>,
+        error: <b>Password Not Match!</b>
+      });
+
+      if (loginPromise){
+        let { token } = res.data;
+        localStorage.setItem('token', token)
+      }
     }
   });
 

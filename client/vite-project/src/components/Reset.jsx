@@ -6,20 +6,34 @@ import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 //import { usernameValidate } from '../helper/validate';
 import { passwordValidate } from '../helper/validate';
+import { resetPassword } from '../helper/helper';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/store';
+import useFetch from '../hooks/fetchhooks';
 
 
-const Password = () => {
+const Reset = () => {
+  const { username } = useAuthStore(state => state.auth);
+   const navigate = useNavigate();
+   const [{ apiData, isLoading, status, serverError }] = useFetch('createResetSession')
   const formik = useFormik({
     initialValues : {
-        password: '',
-        confirm_pwd: ''
+        password: 'admin123',
+        confirm_pwd: 'admin123'
     },
     validate: passwordValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async values => {
-      console.log(values);  
+      let resetPromise = resetPassword({ username, password: values.password });
+      toast.promise(resetPromise, {
+        loading: 'Updating...',
+        success: <b>Reset Successfully!</b>,
+        error: <b>Could not reset</b>
+      });
+     resetPromise.then(function(){navigate('/')})
     }
+
   });
 
   return (
@@ -56,4 +70,4 @@ const Password = () => {
   )
 }
 
-export default Password;
+export default Reset;

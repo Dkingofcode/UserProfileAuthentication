@@ -1,31 +1,45 @@
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import avatar from '../assets/profile.png';
 import styles from '../styles/Username.module.css';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 //import { usernameValidate } from '../helper/validate';
 import { passwordValidate } from '../helper/validate';
 import convertTobase64 from '../helper/convert';
 import extend from '../styles/Profile.module.css';
+import { useAuthStore } from '../store/store';
+import useFetch from '../hooks/fetchhooks';
 
 
 const Profile = () => {
   const [file, setFile] = useState();
+  const { username } = useAuthStore(state => state.auth)
+  const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`) 
+  const navigate = useNavigate();
 
 
     const formik = useFormik({
     initialValues : {
-        email: 'reiihi5726oi@firetrer.com',
-        username: 'exampl345',
-        password: 'admin345'
+        firstName: apiData?.firstName || '',
+        lastName: apiData?.lastName || '',
+        email: apiData?.email || '',
+        mobile:   apiData?.mobile || '',
+        address:   apiData?.address || '',
     },
+    enableReinitialize: true, 
     validate: passwordValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async values => {
-        values = await Object.assign(values, { profile: file || ''})
-        console.log(values);  
+        values = await Object.assign(values, { profile: file || apiData?.profile_img || ''})
+        let updatePromise = updateUser(values);
+        
+        toast.promise(updatePromise, {
+            loading: 'Updating...',
+            success: <b>Update Successfully..!</b>,
+            error: <b>Could not Update!</b>
+        });
     }
   });
 
@@ -34,6 +48,15 @@ const Profile = () => {
     const base64 = await convertTobase64(e.target.file[0]);
     setFile(base64);
   }
+
+  // logout handler function
+  function userLogout() {
+    localStorage.removeItem('token');
+    navigate('/')
+  }
+
+  if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>
+  if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
 
   return (
     <div className='container mx-auto'>
@@ -53,7 +76,7 @@ const Profile = () => {
            <form className='py-1' onSubmit={formik.handleSubmit}>
               <div className='profile flex justify-center py-4'>
                 <label html="profile">
-                <img src={file || avatar} className={`${styles.profile_img} ${extend.profile_img}`} alt="avatar"  />
+                <img src={apiData?.profile || file || avatar} className={`${styles.profile_img} ${extend.profile_img}`} alt="avatar"  />
                 </label>
                
                <input onChange={Upload} type="file" id="profile" name='profile' />

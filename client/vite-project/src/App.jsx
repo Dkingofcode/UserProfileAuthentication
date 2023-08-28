@@ -8,6 +8,8 @@ import Recovery from './components/Recovery';
 import Reset from './components/Reset';
 import PageNotFound from './components/PageNotFound';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { AuthorizeUser } from './middleware/auth';
+
 
 function App() {
   
@@ -20,7 +22,7 @@ function App() {
       <Route path="/" element={<Username  />} />
       <Route path="/register" element={<Register />} />
        <Route path="/password" element={<Password />}  />
-       <Route path="/profile" element={<Profile />}  />
+       <Route path="/profile" element={<AuthorizeUser><Profile /></AuthorizeUser>}  />
        <Route path="/recovery" element={<Recovery />}  />
        <Route path="/reset" element={<Reset />}  />
        <Route path="*" element={<PageNotFound />}  />

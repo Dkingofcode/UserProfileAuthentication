@@ -3,8 +3,9 @@ import { useEffect } from "react";
 
 axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_DOMAIN
 
+/** custom hook */
 export default function useFetch (query){
-    useState({ isLoading: false, apiDelta: undefined, status: null, serverError: null })
+  const [getData, setData] = useState({ isLoading: false, apiDelta: undefined, status: null, serverError: null })
 
     useEffect(() => {
       if(!query) return;
@@ -12,7 +13,8 @@ export default function useFetch (query){
       const fetchData = async () => {
         try{
            setData(prev => ({ ...prev, isLoading: true }));
-           const { data, status } = await axios.get(`/api/${query}`);
+           const { username } = !query ? await getUsername() : '';
+           const { data, status } = !query ? await axios.get(`/api/user/${username}`) : axios.get(`/api/${query}`);
            
            if(status === 201){
             setData(prev => ({ ...prev, isLoading: false}));
@@ -25,8 +27,10 @@ export default function useFetch (query){
             
         }
       }
+      fetchData()
     }, [query])
 }
+
 
 
 

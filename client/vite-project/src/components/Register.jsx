@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import avatar from '../assets/profile.png';
 import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
@@ -12,7 +12,7 @@ import { registerUser } from '../helper/helper';
 
 const Register = () => {
   const [file, setFile] = useState()
-
+  const navigate = useNavigate();
 
     const formik = useFormik({
     initialValues : {
@@ -25,7 +25,14 @@ const Register = () => {
     validateOnChange: false,
     onSubmit: async values => {
         values = await Object.assign(values, { profile: file || ''})
-        registerUser(values); 
+        let registerPromise = registerUser(values)
+        toast.promise(registerPromise, {
+            loading: 'Creating...',
+            success: <b>Register Successfully...!</b>,
+            error: <b>Could not Register.</b>
+        });
+
+        registerPromise.then()
     }
   });
 
