@@ -5,8 +5,9 @@ import styles from '../styles/Username.module.css';
 import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 //import { usernameValidate } from '../helper/validate';
-import { passwordValidate } from '../helper/validate';
+import { passwordValidate, registerValidation } from '../helper/validate';
 import convertTobase64 from '../helper/convert';
+import { registerUser } from '../helper/helper';
 
 
 const Register = () => {
@@ -19,12 +20,12 @@ const Register = () => {
         username: 'exampl345',
         password: 'admin345'
     },
-    validate: passwordValidate,
+    validate: registerValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async values => {
         values = await Object.assign(values, { profile: file || ''})
-        console.log(values);  
+        registerUser(values); 
     }
   });
 

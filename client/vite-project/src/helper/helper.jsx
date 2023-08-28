@@ -1,8 +1,8 @@
 // Make api request
-import axios from axios;
+import axios from "axios";
 
 
-axios.defaults.baseURL = process.env.REACT_APP_SERVER_DOMAIN
+axios.defaults.baseURL = import.meta.env.REACT_APP_SERVER_DOMAIN
 
 /* authenticate   */
 export async function authenticate(username){

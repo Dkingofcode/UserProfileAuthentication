@@ -6,12 +6,17 @@ import { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 //import { usernameValidate } from '../helper/validate';
 import { passwordValidate } from '../helper/validate';
-
+import useFetch from '../hooks/fetchhooks';
+import { useAuthStore } from '../store/store';
 
 const Password = () => {
-  const formik = useFormik({
+   const { username } = useAuthStore(state => state.auth)
+   const [{ isLoading, apiData, serverError }] = useFetch(`/user/${username}`) 
+   useFetch('/user/');
+  
+    const formik = useFormik({
     initialValues : {
-        password: ''
+        password: 'admin123'
     },
     validate: passwordValidate,
     validateOnBlur: false,
@@ -21,6 +26,9 @@ const Password = () => {
     }
   });
 
+  if(isLoading ) return <h1 className='text-2xl font-bold'>isLoading</h1>
+  if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
+
   return (
     <div className='container mx-auto'>
        <Toaster position='top-center' reverseOrder={false}></Toaster>
@@ -29,7 +37,7 @@ const Password = () => {
             
             <div>
              <h4 className='title flex flex-col items-center'>
-              Hello Again!  
+              {apiData?.firstName || apiData?.username}
              </h4>
              <span className='py-4 text-xl w-2/3 text-center text-gray-500'>
                 Explore More by connecting with us.
